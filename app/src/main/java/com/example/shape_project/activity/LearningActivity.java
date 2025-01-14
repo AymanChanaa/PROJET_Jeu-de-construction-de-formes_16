@@ -1,7 +1,6 @@
-package com.example.shape_project;
+package com.example.shape_project.activity;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -26,6 +25,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.shape_project.R;
+import com.example.shape_project.view.ShapeView;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,13 +35,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 public class LearningActivity extends AppCompatActivity {
 
-    private ConstraintLayout canvasLayout;
-    private ShapeView selectedShape;
-    // Predefined basic colors
+    private ConstraintLayout canvasLayout;  // Zone de dessin pour les formes
+    private ShapeView selectedShape; // Forme actuellement sélectionnée
+    // Couleurs prédéfinies
     private int[] predefinedColors = {
             Color.RED,
             Color.GREEN,
@@ -51,37 +52,40 @@ public class LearningActivity extends AppCompatActivity {
             Color.WHITE
 
     };
-    private int currentColorIndex = 0;
-    private ImageView imageView;
+    private int currentColorIndex = 0;  // Index de la couleur actuelle
+    private ImageView imageView; // ImageView pour afficher une image sélectionnée
+
+    // Ouvre la galerie pour sélectionner une image
     private void openGallery() {
         // Launch gallery to pick an image
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(intent);
     }
 
-    private TextView timerTextView;  // TextView to show the countdown timer
-    private CountDownTimer countDownTimer; // Timer object
-    private long timeLeftInMillis = 60000; // 1 minute countdown (60,000 milliseconds)
+    private TextView timerTextView;  // Afficheur du minuteur
+    private CountDownTimer countDownTimer; // Objet pour le compte à rebours
+    private long timeLeftInMillis = 60000; // Temps restant (1 minute)
 
+    // Démarre le compte à rebours
     private void startCountdownTimer() {
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
-                updateTimer();
+                updateTimer(); // Met à jour l'affichage du minuteur
             }
 
             @Override
             public void onFinish() {
                 Toast.makeText(LearningActivity.this, "Time's up!", Toast.LENGTH_SHORT).show();
 
-                // Disable all shapes on the canvas
+                // Désactive toutes les formes et les interactions
                 List<ShapeView> allShapes = getAllViews(); // Get all the shapes on the canvas
                 for (ShapeView shapeView : allShapes) {
-                    shapeView.setEnabled(false); // Disable interaction with the shape
+                    shapeView.setEnabled(false); // Désactive l'interaction avec les formes
                 }
 
-                // Disable the SeekBar and other UI elements
+                // Désactive les boutons et autres éléments d'interface
                 SeekBar seekBarSize = findViewById(R.id.seekBarSize);
                 seekBarSize.setEnabled(false); // Disable SeekBar
 
@@ -93,20 +97,19 @@ public class LearningActivity extends AppCompatActivity {
                 Button btnSelectImage = findViewById(R.id.btnSelectImage);
                 Button btnChangeColor = findViewById(R.id.btnChangeColor);
 
-                // Disable all buttons
                 btnAddCircle.setEnabled(false);
                 btnAddSquare.setEnabled(false);
                 btnAddRectangle.setEnabled(false);
                 btnAddTriangle.setEnabled(false);
                 btnSaveCanvas.setEnabled(true);
                 btnSelectImage.setEnabled(false);
-//                btnSelectImage.setEnabled(false);
                 btnChangeColor.setEnabled(false);
             }
 
         }.start();
     }
 
+    // Met à jour l'affichage du minuteur
     private void updateTimer() {
         int minutes = (int) (timeLeftInMillis / 1000) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
@@ -114,18 +117,18 @@ public class LearningActivity extends AppCompatActivity {
         timerTextView.setText(timeLeftText);
     }
 
-    // Activity Result API to handle selected image
+    // Gère l'image sélectionnée depuis la galerie
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     Uri selectedImageUri = result.getData().getData();
                     if (selectedImageUri != null) {
-                        // Display the selected image in ImageView
+                        // Affiche l'image sélectionnée dans l'ImageView
                         try {
                             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
                             imageView.setImageBitmap(bitmap);
-                            startCountdownTimer();
+                            startCountdownTimer();  // Lance le minuteur après sélection
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -137,12 +140,17 @@ public class LearningActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialisation des éléments de l'interface
         setContentView(R.layout.activity_learning);
         timerTextView = findViewById(R.id.timerText);
         canvasLayout = findViewById(R.id.canvasLayout);
+
+        // Bouton pour réinitialiser l'application
         Button btnReset = findViewById(R.id.btnReset);
         btnReset.setOnClickListener(v -> resetEverything());
 
+        // Boutons pour ajouter des formes
         Button btnAddCircle = findViewById(R.id.btnAddCircle);
         btnAddCircle.setOnClickListener(v -> addShape("circle"));
 
@@ -158,8 +166,9 @@ public class LearningActivity extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         Button btnSelectImage = findViewById(R.id.btnSelectImage);
 
-        // Button to select image
+        // Bouton pour sélectionner une image
         btnSelectImage.setOnClickListener(v -> openGallery());
+
         // Slider pour redimensionner la forme sélectionnée
         SeekBar seekBarSize = findViewById(R.id.seekBarSize);
         seekBarSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -167,12 +176,12 @@ public class LearningActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (selectedShape != null&&progress!=0&&progress!=selectedShape.getLastProgress()){
                     Optional<ShapeView> shapeView = getAllViews().stream()
-                            .filter(shape -> shape == selectedShape) // Filter for the selected shape
-                            .findFirst(); // Get the first matching shape
+                            .filter(shape -> shape == selectedShape) // Filtrer pour la forme sélectionnée
+                            .findFirst(); // Obtenez la première forme correspondante
                     shapeView.ifPresent(view -> {
-                        int delta = progress - view.getLastProgress(); // Calculate the change in progress
-                        view.setSize(selectedShape.getSize() + 4*delta); // delta is negative, so it subtracts
-                        view.setLastProgress( progress); // Update last progress for next change
+                        int delta = progress - view.getLastProgress(); // Calculer le changement en cours
+                        view.setSize(selectedShape.getSize() + 4*delta); // delta est négatif, donc il soustrait
+                        view.setLastProgress( progress); // Mettre à jour la dernière progression pour le prochain changement
                     });
                 }
             }
@@ -188,13 +197,9 @@ public class LearningActivity extends AppCompatActivity {
 
         btnChangeColor.setOnClickListener(v -> {
             if (selectedShape != null) {
-                // Set the shape color to the current predefined color
                 selectedShape.setShapeColor(predefinedColors[currentColorIndex]);
-
-                // Increment the index to move to the next color
                 currentColorIndex++;
 
-                // If the index exceeds the number of colors, reset it to 0 (start from the beginning)
                 if (currentColorIndex >= predefinedColors.length) {
                     currentColorIndex = 0;
                 }
@@ -203,37 +208,35 @@ public class LearningActivity extends AppCompatActivity {
             }
         });
 
-        // Button to clear the selected shape
+        // Bouton pour effacer une forme sélectionnée
         Button btnClear = findViewById(R.id.btnClear);
         btnClear.setOnClickListener(v -> {
             if (selectedShape != null) {
-                // Remove the selected shape from the layout
                 canvasLayout.removeView(selectedShape);
                 selectedShape = null; // Reset the selected shape
                 Toast.makeText(LearningActivity.this, "Shape cleared", Toast.LENGTH_SHORT).show();
             }
         });
 
+        // Bouton pour sauvegarder le canevas comme image
         Button btnSaveCanvas = findViewById(R.id.btnSaveCanvas);
         btnSaveCanvas.setOnClickListener(v -> saveCanvasLayoutAsImage());
-
-        // Update the color dot on the button
-
     }
 
+    // Réinitialise tous les éléments de l'application
     private void resetEverything() {
         // Stop and reset the timer
         if (countDownTimer != null) {
             countDownTimer.cancel();
             countDownTimer = null;
         }
-        timeLeftInMillis = 60000; // Reset to 1 minute
-        updateTimer(); // Update the timer display
+        timeLeftInMillis = 60000;  // Réinitialise le temps
+        updateTimer();
 
-        // Clear all shapes from the canvas
+        // Supprime toutes les formes
         canvasLayout.removeAllViews();
 
-        // Enable all buttons
+        // Activer tous les boutons
         findViewById(R.id.btnAddCircle).setEnabled(true);
         findViewById(R.id.btnAddSquare).setEnabled(true);
         findViewById(R.id.btnAddRectangle).setEnabled(true);
@@ -242,49 +245,48 @@ public class LearningActivity extends AppCompatActivity {
         findViewById(R.id.btnSelectImage).setEnabled(true);
         findViewById(R.id.btnChangeColor).setEnabled(true);
 
-        // Reset the SeekBar
         SeekBar seekBarSize = findViewById(R.id.seekBarSize);
         seekBarSize.setProgress(0);
         seekBarSize.setEnabled(true);
 
-        // Clear the image in the ImageView
+        // Effacer l'image dans ImageView
         imageView.setImageBitmap(null);
 
-        // Reset selected shape
+        // Réinitialise la sélection
         selectedShape = null;
 
-        // Show a confirmation message
+        // Afficher un message de confirmation
         Toast.makeText(this, "Everything has been reset", Toast.LENGTH_SHORT).show();
     }
 
 
     private List<ShapeView> getAllViews() {
-        int childCount = canvasLayout.getChildCount(); // Get the number of child views
+        int childCount = canvasLayout.getChildCount(); // Obtenir le nombre de vues des enfants
         List<ShapeView> viewList = new ArrayList<>();
         for (int i = 0; i < childCount; i++) {
-            viewList.add((ShapeView)canvasLayout.getChildAt(i)); // Add each child view to the list
+            viewList.add((ShapeView)canvasLayout.getChildAt(i)); // Ajoutez chaque vue enfant à la liste
         }
         return viewList;
     }
 
     public void saveCanvasLayoutAsImage() {
-        // Create a Bitmap with the size of the canvasLayout
+        // Créer une image bitmap avec la taille du canvasLayout
         Bitmap bitmap = Bitmap.createBitmap(canvasLayout.getWidth(), canvasLayout.getHeight(), Bitmap.Config.ARGB_8888);
 
-        // Create a Canvas that will draw onto the Bitmap
+        // Créez un canevas qui dessinera sur le bitmap
         Canvas canvas = new Canvas(bitmap);
 
-        // Draw the layout onto the canvas
+        // Dessinez la mise en page sur la toile
         canvasLayout.draw(canvas);
 
-        // Define the directory and file name
+        // Définir le répertoire et le nom du fichier
         String folderName = "MyShapes";
         String fileName = "shape_" + System.currentTimeMillis() + ".png"; // Unique file name
 
-        // Get the external storage directory for pictures
+        // Obtenir le répertoire de stockage externe pour les images
         File picturesDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), folderName);
 
-        // Ensure the directory exists
+        // Assurez-vous que le répertoire existe
         if (!picturesDir.exists()) {
             if (!picturesDir.mkdirs()) {
                 Log.e("ImageUtils", "Failed to create directory: " + picturesDir.getAbsolutePath());
@@ -293,15 +295,15 @@ public class LearningActivity extends AppCompatActivity {
             }
         }
 
-        // Create the image file
+        // Créer le fichier image
         File imageFile = new File(picturesDir, fileName);
 
         try (OutputStream outputStream = new FileOutputStream(imageFile)) {
-            // Save the bitmap to the file
+            // Enregistrer le bitmap dans le fichier
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream); // Save as PNG
             outputStream.flush();
 
-            // Notify the gallery about the new image
+            // Informer la galerie de la nouvelle image
             MediaScannerConnection.scanFile(this, new String[]{imageFile.getAbsolutePath()}, null, (path, uri) -> {
                 Log.d("ImageUtils", "Image saved successfully to gallery: " + path);
             });
@@ -312,6 +314,8 @@ public class LearningActivity extends AppCompatActivity {
             Toast.makeText(this, "Error saving image", Toast.LENGTH_SHORT).show();
         }
     }
+
+    // Ajoute une nouvelle forme sur le canevas
     @SuppressLint("ClickableViewAccessibility")
     private void addShape(String shapeType) {
         final ShapeView shapeView = new ShapeView(this, shapeType);
@@ -319,6 +323,7 @@ public class LearningActivity extends AppCompatActivity {
         seekBarSize.setProgress(0);
         shapeView.setOnTouchListener(new View.OnTouchListener() {
             float dx, dy;
+            // Gère le toucher d'une forme
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {

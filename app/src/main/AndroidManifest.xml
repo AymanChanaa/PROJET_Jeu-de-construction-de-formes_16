@@ -19,7 +19,7 @@
 
         <!-- MainActivity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +29,7 @@
 
         <!-- LearningActivity -->
         <activity
-            android:name=".LearningActivity"
+            android:name=".activity.LearningActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
 
         <!-- AchievementsActivity (Add this activity) -->
         <activity
-            android:name=".AchievementsActivity"
+            android:name=".activity.AchievementsActivity"
             android:exported="true">
         </activity>
         <!-- FullScreenImageActivity (Add this activity) -->
@@ -48,7 +48,7 @@
             android:exported="true">
         </activity>
 
-        <activity android:name=".HelpActivity">
+        <activity android:name=".activity.HelpActivity">
 
         </activity>
     </application>
