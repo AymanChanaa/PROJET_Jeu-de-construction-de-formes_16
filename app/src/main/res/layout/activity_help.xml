@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvHelpText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bienvenue dans l’Aide du jeu Jeu de Construction de Formes ! Ce jeu a pour objectif d'apprendre les formes géométriques tout en développant la logique spatiale. Voici quelques conseils pour vous aider à profiter pleinement du jeu :\n\nBut du jeu : Le but est de reproduire un modèle donné en utilisant des formes géométriques. Vous devrez assembler les formes de différentes tailles et couleurs pour correspondre exactement au modèle.\n\nComment jouer :\n\nSélection des formes : Cliquez sur les formes géométriques disponibles pour les sélectionner. Vous pouvez les déplacer sur l'écran pour les positionner correctement.\nAssemblage du modèle : Utilisez les formes sélectionnées pour recréer le modèle visible à côté. Essayez de respecter les tailles, couleurs, et orientations des formes du modèle.\nVérification de la construction : Lorsque vous avez terminé, cliquez sur le bouton Vérifier pour voir si votre construction est correcte. Si ce n’est pas le cas, vous pouvez essayer à nouveau en ajustant votre assemblage.\nLe compte à rebours : Vous avez un temps limité pour réaliser chaque modèle. Soyez rapide, mais précis ! Si le temps est écoulé avant que vous ayez terminé, vous devrez recommencer.\n\nNiveaux de difficulté : Au fur et à mesure que vous progressez, les modèles deviennent plus complexes et les défis plus intéressants. N'hésitez pas à prendre votre temps pour réfléchir et trouver la meilleure solution.\n\nSi vous avez besoin de plus de temps : Utilisez le bouton Pause pour faire une pause si vous avez besoin de réfléchir à votre construction.\n\nAmusez-vous bien et apprenez tout en jouant !"
+                android:textSize="16sp"
+                android:lineSpacingExtra="10dp"
+                android:scrollbars="vertical" />
+
+        </ScrollView>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

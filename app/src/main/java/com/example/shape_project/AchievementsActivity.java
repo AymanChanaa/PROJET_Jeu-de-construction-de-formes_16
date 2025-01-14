@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.widget.GridView;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -38,8 +40,8 @@ public class AchievementsActivity extends AppCompatActivity {
                     100); // Use a unique request code, e.g., 100
         }
 
-        recyclerView = findViewById(R.id.recyclerViewImages);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // Grid layout with 3 columns
+        GridView gridView = findViewById(R.id.gridViewImages);
+        // recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // Grid layout with 3 columns
 
         // Get the folder path from the intent
         String folderPath = getIntent().getStringExtra("folderPath");
@@ -59,7 +61,10 @@ public class AchievementsActivity extends AppCompatActivity {
         }
 
         // Set up the adapter and pass context
-        imageAdapter = new ImageAdapter(this, imageFiles);
-        recyclerView.setAdapter(imageAdapter);
+        // imageAdapter = new ImageAdapter(this, imageFiles);
+        // recyclerView.setAdapter(imageAdapter);
+
+        ImageGridAdapter adapter = new ImageGridAdapter(this, imageFiles);
+        gridView.setAdapter(adapter);
     }
 }
